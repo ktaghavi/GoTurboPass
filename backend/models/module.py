@@ -1,5 +1,8 @@
-from models import db
+from .db import db
+from sqlalchemy.orm import relationship
 from datetime import datetime
+from sqlalchemy import Column, Integer, String, Boolean, Text, DateTime
+
 
 
 class Module(db.Model):
@@ -16,7 +19,7 @@ class Module(db.Model):
     active = db.Column(db.Boolean, nullable=False, default=True)
 
     # Optional quiz (one-to-one)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=True)
+    quiz = relationship("Quiz", uselist=False, back_populates="module", cascade="all,delete-orphan")
 
     # Timestamps
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

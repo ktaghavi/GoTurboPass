@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 from config import Config
-from models import db
+from models.db import db
 from middleware.security import apply_security_headers
 from middleware.rate_limit import create_limiter
 from routes.auth import auth_bp

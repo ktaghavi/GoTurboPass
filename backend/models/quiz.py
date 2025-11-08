@@ -1,7 +1,8 @@
-from models import db
+from .db import db
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, ForeignKey, DateTime
 from datetime import datetime
 import json
-
 
 class Quiz(db.Model):
     """
@@ -19,7 +20,7 @@ class Quiz(db.Model):
 
     # Relationships
     questions = db.relationship('Question', backref='quiz', lazy='dynamic', cascade='all, delete-orphan')
-    module = db.relationship('Module', backref='quiz', foreign_keys='Quiz.module_id')
+    module = relationship("Module", back_populates="quiz")
 
     def __repr__(self):
         return f'<Quiz {self.id} for Module {self.module_id}>'

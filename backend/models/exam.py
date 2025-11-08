@@ -1,4 +1,5 @@
-from models import db
+from .db import db
+from sqlalchemy.orm import relationship
 from datetime import datetime
 
 
@@ -17,9 +18,22 @@ class Exam(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Relationships
-    questions = db.relationship('Question', backref='exam', lazy='dynamic', cascade='all, delete-orphan')
-    attempts = db.relationship('ExamAttempt', backref='exam_ref', lazy='dynamic', cascade='all, delete-orphan')
+    # If you truly have exam-specific questions (separate from module quizzes), keep this.
+    # Otherwise you can remove this relationship if "Question" belongs only to Quiz, not Exam.
+    questions = db.relationship(
+        'Question',
+        backref='exam',
+        lazy='dynamic',
+        cascade='all, delete-orphan'
+    )
+
+    # ✅ Proper parent→child relation requiring ExamAttempt.exam_id FK
+    attempts = db.relationship(
+        'ExamAttempt',
+        back_populates='exam',
+        lazy='dynamic',
+        cascade='all, delete-orphan'
+    )
 
     def __repr__(self):
         return f'<Exam {self.label}>'
@@ -41,8 +55,16 @@ class ExamAttempt(db.Model):
     __tablename__ = 'exam_attempts'
 
     id = db.Column(db.Integer, primary_key=True)
+
+    # ✅ Add the missing FK to exams.id
+    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), nullable=False, index=True)
+
     student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
-    exam_label = db.Column(db.String(50), nullable=False)  # "Final A" or "Final B"
+
+    # You can keep exam_label as a denormalized copy for convenience / reporting,
+    # but the relational link must be exam_id.
+    exam_label = db.Column(db.String(50), nullable=False)
+
     score_percent = db.Column(db.Float, nullable=True)
     passed = db.Column(db.Boolean, nullable=False, default=False)
 
@@ -51,6 +73,9 @@ class ExamAttempt(db.Model):
     finished_at = db.Column(db.DateTime, nullable=True)
     question_order = db.Column(db.JSON, nullable=True)  # [q_id1, q_id2, ...] randomized order
 
+    # ✅ Child→parent relationship
+    exam = relationship('Exam', back_populates='attempts')
+
     def __repr__(self):
         return f'<ExamAttempt {self.id} Student {self.student_id} {self.exam_label}>'
 
@@ -58,6 +83,7 @@ class ExamAttempt(db.Model):
         return {
             'id': self.id,
             'student_id': self.student_id,
+            'exam_id': self.exam_id,
             'exam_label': self.exam_label,
             'score_percent': self.score_percent,
             'passed': self.passed,
