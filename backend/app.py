@@ -4,6 +4,7 @@ from flask_cors import CORS
 from config import Config
 from models import db
 from routes.auth import auth_bp
+from routes.geo import geo_bp
 from werkzeug.exceptions import HTTPException
 import traceback
 
@@ -26,6 +27,7 @@ def create_app(config_class=Config):
 
     # Register blueprints
     app.register_blueprint(auth_bp)
+    app.register_blueprint(geo_bp)
 
     # Health check
     @app.get("/health")
