@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 
 from config import Config
-from models.db import db
+from models import db
 from routes.auth import auth_bp
 from werkzeug.exceptions import HTTPException
 import traceback
