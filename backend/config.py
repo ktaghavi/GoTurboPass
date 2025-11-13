@@ -56,4 +56,4 @@ class Config:
     EXAM_PASS_PERCENT = int(os.getenv('EXAM_PASS_PERCENT', 70))
 
     # PII Redaction - fields to never log
-    PII_FIELDS = {'caDlNumber', 'dob', 'password', 'ca_dl_hash', 'ca_dl_full'}
+    PII_FIELDS = {'emai', 'caDlNumber', 'dob', 'password', 'ca_dl_hash', 'ca_dl_full'}

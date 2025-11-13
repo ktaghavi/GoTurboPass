@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from werkzeug.exceptions import HTTPException
 
 from config import Config
 from models.db import db
@@ -21,7 +22,16 @@ def create_app(config_class=Config):
     limiter.init_app(app)
 
     # CORS - locked to frontend origin
-    CORS(app, origins=[app.config['FRONTEND_ORIGIN']], supports_credentials=True)
+    CORS(
+    app,
+    supports_credentials=True,
+    resources={r"/api/*": {"origins": [
+        app.config.get('FRONTEND_ORIGIN', 'http://localhost:5173'),
+        'http://127.0.0.1:5173'
+    ]}},
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+    )
 
     # Security headers middleware
     @app.after_request
@@ -31,8 +41,9 @@ def create_app(config_class=Config):
     # Register blueprints
     app.register_blueprint(auth_bp)
 
-    # Apply rate limiting to auth routes
-    limiter.limit("10 per minute")(auth_bp)
+    # Only limit POST/PUT/PATCH/DELETE on this blueprint
+    limiter.limit("10 per minute", methods=["POST", "PUT", "PATCH", "DELETE"])(auth_bp)
+
 
     # Health check endpoint
     @app.route('/health', methods=['GET'])
@@ -64,8 +75,9 @@ def create_app(config_class=Config):
     # Generic error handler
     @app.errorhandler(Exception)
     def handle_error(e):
-        # Log error (but not to client for security)
-        app.logger.error(f'Unhandled error: {str(e)}')
+        if isinstance(e, HTTPException):
+            return e
+        app.logger.exception('Unhandled error')  # full traceback
         return jsonify({'error': 'Internal server error'}), 500
 
     return app

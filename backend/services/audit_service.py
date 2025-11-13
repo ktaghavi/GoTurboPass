@@ -1,55 +1,53 @@
-from models import db
+from models.db import db
 from models.audit_log import AuditLog
 from flask import request
 from config import Config
+from datetime import datetime
+import traceback
 
 
 class AuditService:
     """Audit logging service with PII redaction."""
 
     @staticmethod
-    def log_event(
-        event: str,
-        student_id: int = None,
-        user_id: int = None,
-        details: dict = None
-    ):
+    def log_event(event: str, student_id=None, user_id=None, details=None):
         """
         Log an audit event with PII redaction.
-
-        Args:
-            event: Event name (e.g., 'REGISTER', 'LOGIN', 'TIMER_START')
-            student_id: Student ID (if applicable)
-            user_id: User ID (generic, if applicable)
-            details: Additional context (will be PII-redacted)
+        Never raises exceptions — failures are logged & rolled back.
         """
-        # Redact PII from details
-        safe_details = AuditService._redact_pii(details) if details else None
+        try:
+            # Redact PII
+            safe_details = AuditService._redact_pii(details) if details else {}
 
-        # Extract IP and User-Agent from request context
-        ip = request.remote_addr if request else None
-        user_agent = request.headers.get('User-Agent') if request else None
+            # Safe extraction of request context
+            ip = getattr(request, "remote_addr", None)
+            user_agent = request.headers.get("User-Agent") if request else None
 
-        # Create audit log entry
-        log = AuditLog(
-            event=event,
-            student_id=student_id,
-            user_id=user_id,
-            ip=ip,
-            user_agent=user_agent,
-            details=safe_details
-        )
-        db.session.add(log)
-        db.session.commit()
+            # Create audit log entry
+            log = AuditLog(
+                event=event,
+                student_id=student_id,
+                user_id=user_id,
+                ip=ip,
+                user_agent=user_agent,
+                details=safe_details,
+                created_at=datetime.utcnow(),
+            )
+
+            db.session.add(log)
+            db.session.commit()
+
+        except Exception:
+            db.session.rollback()
+            traceback.print_exc()  # keep this for dev visibility; remove in prod
 
     @staticmethod
     def _redact_pii(data: dict) -> dict:
-        """Redact PII fields from dict."""
+        """Return a shallow copy with configured PII fields redacted."""
         if not isinstance(data, dict):
             return data
-
         redacted = data.copy()
-        for field in Config.PII_FIELDS:
+        for field in getattr(Config, "PII_FIELDS", []):
             if field in redacted:
-                redacted[field] = '[REDACTED]'
+                redacted[field] = "[REDACTED]"
         return redacted
