@@ -34,14 +34,15 @@ cd GoTurboPass
 
 **Backend** (`backend/.env`):
 ```bash
-cp backend/.env.example backend/.env
-# Edit backend/.env with your database credentials
+cd ~/Development/code/GoTurboPass/backend
+source venv/bin/activate
+python app.py
 ```
 
 **Frontend** (`frontend/.env`):
 ```bash
-cp frontend/.env.example frontend/.env
-# Default: VITE_API_BASE=http://localhost:5000
+cd ~/Development/code/GoTurboPass/frontend
+npm run dev
 ```
 
 ### 3. Install Dependencies

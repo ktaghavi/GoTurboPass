@@ -56,6 +56,15 @@ async function apiRequest(endpoint, options = {}) {
 
   try {
     const response = await fetch(url, config)
+
+    // In case of 204 or empty body, avoid JSON parse errors
+    if (response.status === 204) {
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      return null
+    }
+
     const data = await response.json()
 
     if (!response.ok) {
@@ -73,6 +82,7 @@ async function apiRequest(endpoint, options = {}) {
  * Auth API
  */
 export const authAPI = {
+  // Phase 1: our backend register only expects { email, password }
   register: (data) => apiRequest('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -94,10 +104,32 @@ export const authAPI = {
 }
 
 /**
- * Student API (placeholder for Phase 2)
+ * GEO API — counties & courts for dropdowns
+ */
+export const geoAPI = {
+  getCounties: () =>
+    apiRequest('/api/geo/counties', {
+      method: 'GET',
+    }),
+
+  getCourtsByCounty: (countyId) =>
+    apiRequest(`/api/geo/courts?county_id=${countyId}`, {
+      method: 'GET',
+    }),
+}
+
+/**
+ * Student / Enrollment API
  */
 export const studentAPI = {
-  // TODO Phase 2: Add module, quiz, exam APIs
+  // Phase 2: add module, quiz, exam APIs here later
+
+  // Phase 1: enrollment (StudentProfile + Citation)
+  enroll: (payload) =>
+    apiRequest('/api/enroll', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
 }
 
 export default apiRequest
