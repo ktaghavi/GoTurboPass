@@ -1,22 +1,21 @@
-.PHONY: help dev migrate seed install-backend install-frontend install clean
+.PHONY: help dev db-init db-migrate db-upgrade migrate seed install-backend install-frontend install clean
 
 help:
-	@echo "GoTurboPass - Phase 1 Development Commands"
+	@echo "GoTurboPass — Development Commands"
 	@echo ""
-	@echo "Setup:"
+	@echo "Setup (run once, in order):"
 	@echo "  make install          Install all dependencies (backend + frontend)"
-	@echo "  make install-backend  Install backend dependencies"
-	@echo "  make install-frontend Install frontend dependencies"
+	@echo "  make db-init          Create migrations/ directory (one-time only)"
+	@echo "  make db-migrate       Generate migration from current models"
+	@echo "  make db-upgrade       Apply pending migrations to the database"
+	@echo "  make seed             Seed CA counties + courts"
 	@echo ""
-	@echo "Database:"
-	@echo "  make migrate          Run Alembic migrations"
-	@echo "  make seed             Seed database with demo data"
-	@echo ""
-	@echo "Development:"
-	@echo "  make dev              Run backend + frontend concurrently"
+	@echo "Day-to-day:"
+	@echo "  make dev              Start backend + frontend concurrently"
+	@echo "  make migrate          Shortcut: db-migrate + db-upgrade"
 	@echo ""
 	@echo "Cleanup:"
-	@echo "  make clean            Remove build artifacts"
+	@echo "  make clean            Remove build artifacts and venv"
 
 install: install-backend install-frontend
 	@echo "✅ All dependencies installed"
@@ -34,19 +33,26 @@ install-frontend:
 	cd frontend && npm install
 	@echo "✅ Frontend dependencies installed"
 
-migrate:
-	@echo "🔄 Running database migrations..."
-	cd backend && \
-		. venv/bin/activate && \
-		alembic revision --autogenerate -m "Initial schema" && \
-		alembic upgrade head
-	@echo "✅ Migrations complete"
+db-init:
+	@echo "🗄️  Initialising Flask-Migrate (one-time)..."
+	cd backend && . venv/bin/activate && flask db init
+	@echo "✅ migrations/ directory created"
+
+db-migrate:
+	@echo "🔄 Generating migration..."
+	cd backend && . venv/bin/activate && flask db migrate -m "$(MSG)"
+	@echo "✅ Migration generated — review backend/migrations/versions/ before upgrading"
+
+db-upgrade:
+	@echo "⬆️  Applying migrations..."
+	cd backend && . venv/bin/activate && flask db upgrade
+	@echo "✅ Database up to date"
+
+migrate: db-migrate db-upgrade
 
 seed:
-	@echo "🌱 Seeding database..."
-	cd backend && \
-		. venv/bin/activate && \
-		python seed.py
+	@echo "🌱 Seeding CA counties + courts..."
+	cd backend && . venv/bin/activate && python seed_geo_full.py
 	@echo "✅ Seed complete"
 
 dev:
@@ -60,7 +66,7 @@ dev:
 
 clean:
 	@echo "🧹 Cleaning build artifacts..."
-	rm -rf backend/__pycache__ backend/**/__pycache__ backend/**/**/__pycache__
+	find backend -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	rm -rf backend/venv
 	rm -rf frontend/node_modules frontend/dist
 	@echo "✅ Clean complete"

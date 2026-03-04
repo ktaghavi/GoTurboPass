@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "backend",
+      "runtimeExecutable": "C:\\Windows\\System32\\wsl.exe",
+      "runtimeArgs": ["bash", "-c", "cd /home/kaspr/Development/code/GoTurboPass/backend && source venv/bin/activate && python app.py"],
+      "port": 5000
+    },
+    {
+      "name": "frontend",
+      "runtimeExecutable": "C:\\Windows\\System32\\wsl.exe",
+      "runtimeArgs": ["bash", "-c", "cd /home/kaspr/Development/code/GoTurboPass/frontend && npm run dev"],
+      "port": 5173
+    }
+  ]
+}

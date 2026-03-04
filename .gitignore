@@ -1,0 +1,62 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# GoTurboPass — .gitignore
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Secrets & environment ─────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example          # keep the template
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.mypy_cache/
+.pytest_cache/
+.hypothesis/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Virtual environment (NEVER commit the venv)
+backend/venv/
+venv/
+.venv/
+env/
+
+# ── SQLite dev database (schema is managed by Alembic — don't commit data) ───
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Node / frontend ───────────────────────────────────────────────────────────
+node_modules/
+frontend/dist/
+frontend/.vite/
+.npm
+
+# ── OS artefacts ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor / IDE ──────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Stripe CLI (local testing) ────────────────────────────────────────────────
+.stripe/
+
+# ── PDF output (generated at runtime) ────────────────────────────────────────
+backend/pdfs/

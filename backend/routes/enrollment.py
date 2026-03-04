@@ -7,6 +7,8 @@ from models.student_profile import StudentProfile, GenderEnum, DLClassEnum
 from models.citation import Citation
 from models.county import County
 from models.court import Court
+from services.auth_service import AuthService
+from services.audit_service import AuditService
 
 enrollment_bp = Blueprint("enrollment", __name__, url_prefix="/api/enroll")
 
@@ -161,7 +163,10 @@ def create_enrollment():
         profile.state = data["state"].strip()
         profile.zip = data["zip"].strip()
 
-        profile.dl_number = data["dlNumber"].strip()
+        # Hash DL — full number is never stored in plaintext
+        raw_dl = data["dlNumber"].strip()
+        profile.dl_hash  = AuthService.hash_dl(raw_dl)
+        profile.dl_last4 = AuthService.extract_dl_last4(raw_dl)
         profile.dl_state = data["dlState"].strip()
         profile.dl_class = dl_class_enum
 
@@ -187,18 +192,17 @@ def create_enrollment():
         db.session.add(citation)
         db.session.commit()
 
-        # --------- 6. Audit log (TODO: re-enable when AuditService is added) ---------
-        # from services.audit_service import AuditService
-        # AuditService.log_event(
-        #     event="ENROLL_CREATE",
-        #     student_id=user.id,
-        #     user_id=user.id,
-        #     details={
-        #         "county": county.name,
-        #         "court": court.name,
-        #         "case_number": citation.case_number,
-        #     },
-        # )
+        # --------- 6. Audit log ---------
+        AuditService.log_event(
+            event="ENROLL",
+            student_id=user.id,
+            details={
+                "county": county.name,
+                "court": court.name,
+                "case_number": citation.case_number,
+                "citation_id": citation.id,
+            },
+        )
 
         return jsonify({
             "message": "Enrollment saved successfully",

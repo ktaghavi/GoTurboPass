@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git config --global --add safe.directory '%\\(prefix\\)///wsl$/Ubuntu/home/kaspr/Development/code/GoTurboPass')",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(where wsl)",
+      "Bash(where wsl.exe)",
+      "Bash(wsl bash -c \"which npm && which node && node --version\")",
+      "Bash(wsl --exec bash -c \"which npm 2>/dev/null || echo ''npm not found''; which node 2>/dev/null || echo ''node not found''; ls /home/kaspr/Development/code/GoTurboPass/frontend/\")",
+      "Bash(where node)",
+      "Bash(where npm)",
+      "Bash(powershell -Command \"Get-Command npm -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source; Get-Command node -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Bash(powershell -Command \"& {Get-ChildItem ''C:\\\\Program Files\\\\nodejs'' -ErrorAction SilentlyContinue; Get-ChildItem ''C:\\\\Program Files \\(x86\\)\\\\nodejs'' -ErrorAction SilentlyContinue; dir ''C:\\\\Users\\\\Kam\\\\AppData\\\\Roaming\\\\nvm'' -ErrorAction SilentlyContinue}\")",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(wsl -d Ubuntu bash -c \":*)",
+      "Bash(wsl -d Ubuntu -- bash -c \"cd /home/kaspr/Development/code/GoTurboPass && rm -f .git/index.lock && git status --short 2>&1 | head -20\")",
+      "Bash(wsl -d Ubuntu -- bash -c \":*)"
+    ]
+  }
+}

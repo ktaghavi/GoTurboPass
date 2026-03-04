@@ -1,6 +1,22 @@
+# ── Web framework ─────────────────────────────────────────────────────────────
 flask==3.0.3
 flask-cors==4.0.1
+
+# ── ORM + migrations ──────────────────────────────────────────────────────────
 flask-sqlalchemy==3.1.1
-flask-migrate==4.0.7
+flask-migrate==4.0.7          # wraps Alembic; use `flask db` commands
+
+# ── Database drivers ──────────────────────────────────────────────────────────
+psycopg2-binary==2.9.9        # PostgreSQL (production + local Docker)
+# sqlite3 is stdlib — no install needed for dev fallback
+
+# ── Authentication ────────────────────────────────────────────────────────────
+flask-jwt-extended==4.6.0     # JWT access tokens (30-min expiry)
+bcrypt==4.1.2                 # CA DL number hashing (PII protection)
+
+# ── Rate limiting ─────────────────────────────────────────────────────────────
+flask-limiter==3.7.0          # Per-IP rate limits on auth endpoints
+
+# ── Validation & utilities ────────────────────────────────────────────────────
 email-validator==2.1.1
 python-dotenv==1.0.1
