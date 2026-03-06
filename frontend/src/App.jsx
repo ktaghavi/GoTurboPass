@@ -33,7 +33,14 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route path="/payment" element={<PaymentPage />} /> {/* we’ll add this */}
+      <Route
+        path="/payment"
+        element={
+          <ProtectedRoute>
+            <PaymentPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   )
 }

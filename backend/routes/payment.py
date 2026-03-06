@@ -89,7 +89,7 @@ def create_session():
             }],
             # Frontend URLs — Stripe appends ?session_id={CHECKOUT_SESSION_ID}
             success_url=f"{frontend_base}/dashboard?payment=success",
-            cancel_url=f"{frontend_base}/checkout?payment=cancelled",
+            cancel_url=f"{frontend_base}/payment?payment=cancelled",
             # Metadata for webhook lookup (belt-and-suspenders alongside DB record)
             client_reference_id=str(user_id),
             metadata={

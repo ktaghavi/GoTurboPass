@@ -17,6 +17,9 @@ bcrypt==4.1.2                 # CA DL number hashing (PII protection)
 # ── Rate limiting ─────────────────────────────────────────────────────────────
 flask-limiter==3.7.0          # Per-IP rate limits on auth endpoints
 
+# ── Payments ──────────────────────────────────────────────────────────────────
+stripe==14.4.0                # Stripe Checkout + webhook verification
+
 # ── Validation & utilities ────────────────────────────────────────────────────
 email-validator==2.1.1
 python-dotenv==1.0.1

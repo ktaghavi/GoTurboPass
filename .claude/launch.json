@@ -10,7 +10,7 @@
     {
       "name": "frontend",
       "runtimeExecutable": "C:\\Windows\\System32\\wsl.exe",
-      "runtimeArgs": ["bash", "-c", "cd /home/kaspr/Development/code/GoTurboPass/frontend && npm run dev"],
+      "runtimeArgs": ["bash", "-c", "cd /home/kaspr/Development/code/GoTurboPass/frontend && /home/kaspr/.nvm/versions/node/v24.6.0/bin/node node_modules/vite/bin/vite.js --host 0.0.0.0 --port 5173"],
       "port": 5173
     }
   ]

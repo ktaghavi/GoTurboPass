@@ -27,6 +27,7 @@ from routes.auth       import auth_bp
 from routes.geo        import geo_bp
 from routes.enrollment import enrollment_bp
 from routes.me         import me_bp
+from routes.payment    import payment_bp
 
 jwt     = JWTManager()
 migrate = Migrate()
@@ -63,6 +64,7 @@ def create_app(config_class=Config):
     app.register_blueprint(geo_bp)
     app.register_blueprint(enrollment_bp)
     app.register_blueprint(me_bp)
+    app.register_blueprint(payment_bp)
 
     # Tighter rate limits on auth mutations (applied after blueprint registration)
     limiter.limit("10 per hour",   methods=["POST"])(auth_bp)

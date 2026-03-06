@@ -119,6 +119,19 @@ export const geoAPI = {
 }
 
 /**
+ * Payment API — Stripe Checkout
+ */
+export const paymentAPI = {
+  // Create a Stripe Checkout session; returns { url } to redirect the browser to
+  createSession: () =>
+    apiRequest('/api/payment/create-session', { method: 'POST' }),
+
+  // Check current payment status; returns { paid, status, ... }
+  getStatus: () =>
+    apiRequest('/api/payment/status', { method: 'GET' }),
+}
+
+/**
  * Student / Enrollment API
  */
 export const studentAPI = {
